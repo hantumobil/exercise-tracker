@@ -2,11 +2,8 @@ require('dotenv').config();
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-
+const routes = require('./routes');
 const cors = require('cors')
-
-const mongoose = require('mongoose')
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/exercise-track' )
 
 app.use(cors())
 
@@ -15,9 +12,12 @@ app.use(bodyParser.json())
 
 
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/api/exercise', routes)
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
+
 
 
 // Not found middleware
@@ -43,6 +43,8 @@ app.use((err, req, res, next) => {
   res.status(errCode).type('txt')
     .send(errMessage)
 })
+
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)  
